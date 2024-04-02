@@ -39,18 +39,15 @@ async def getLatestArticles():
         
         # scraping logic !!
         page = html.fromstring(response.content)
-        print(page)
         
-        newsHeaders = [element.text for element in page.xpath("//span[@class='titleline']/a")]
-        newsDictionary = {i + 1: text for i, text in enumerate(newsHeaders)}
-        # removing \t\n
-        newsDictionary = {key: value.strip() for key, value in newsDictionary.items()}
-        # removing empty key-value like this ""
-        newsDictionary = {key: value for key, value in newsDictionary.items() if value.strip() != ""}
+        newsDictionary = {}
+        for element in page.xpath("//span[@class='titleline']/a"):
+            title = element.text.strip().replace('\n', '').replace('\t', '')
+            url = element.get('href')
+            if title:
+                newsDictionary[title] = url
         
         return newsDictionary
-        
-
 
     else:
         return {"error" : "Failed to fetch data from Hackernews!!"}
